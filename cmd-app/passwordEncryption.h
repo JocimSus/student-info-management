@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 
+std::string password_filename = "password.txt";
+
 std::string hashPassword(const std::string password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
@@ -25,31 +27,26 @@ std::string hashPassword(const std::string password) {
 
 void savePassword(const std::string password) {
     std::string hashed_password = hashPassword(password);
-    while (true) {
-        if (std::filesystem::exists("password.txt")) {
-            // if file exists
-            std::ofstream wfile("password.txt");
-            if (wfile.is_open()) {
-                wfile << hashed_password;
-                wfile.close();
-                std::cout << "Successfully saved password" << std::endl
-                          << std::endl;
-                break;
-            } else {
-                std::cerr << "Error: Unable to open file" << std::endl
-                          << std::endl;
-                break;
-            }
-        } else {
-            // if file not exist
-            std::ofstream wfile("password.txt");
-            wfile.close();
-        }
+    if (!(std::filesystem::exists(password_filename))) {
+        // if file not exist
+        std::ofstream wfile(password_filename);
+        wfile.close();
     }
+    // if file exists
+    std::ofstream wfile(password_filename);
+    if (!(wfile.is_open())) {
+        // if file exist && is not open
+        std::cerr << "Error: Unable to open file" << std::endl
+                  << std::endl;
+    }
+    wfile << hashed_password;
+    wfile.close();
+    std::cout << "Successfully saved password" << std::endl
+              << std::endl;
 }
 
 bool authenticatePassword(const std::string password) {
-    std::ifstream rfile("password.txt");
+    std::ifstream rfile(password_filename);
     if (rfile.is_open()) {
         std::string stored_hashed_password = "";
         std::string hashed_password = hashPassword(password);
