@@ -1,3 +1,6 @@
+#ifndef PASSWORD_ENCRYPTION_H
+#define PASSWORD_ENCRYPTION_H
+
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
@@ -60,3 +63,5 @@ bool authenticatePassword(const std::string password) {
         return false;
     }
 }
+
+#endif  // PASSWORD_ENCRYPTION_H
